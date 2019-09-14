@@ -89,6 +89,8 @@ sudo apt update && sudo apt upgrade -y
 ```
 # We say yes
 [pic2]
+# We say yes a lot! (1,2...
+[pic3]
 ```
 sudo apt install ca-certificates curl gnupg2 apt-transport-https software-properties-common git -y
 sudo sh -c "echo deb https://apt.dockerproject.org/repo debian-jessie main > /etc/apt/sources.list.d/docker.list"
