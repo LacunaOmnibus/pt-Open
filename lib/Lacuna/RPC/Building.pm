@@ -5,8 +5,6 @@ use utf8;
 no warnings qw(uninitialized);
 extends 'Lacuna::RPC';
 
-with "Lacuna::RPC::Role::Building";
-
 sub model_class {
     confess "you need to override me";
 }
@@ -18,6 +16,14 @@ sub app_url {
 sub to_app_with_url {
     my $self = shift;
     return ($self->app_url => $self->to_app);
+}
+
+sub _is_owner {
+    my ($self, $session, $building) = @_;
+    return
+        $session->current_empire->id == $building->body->empire->id or
+        $session->current_empire->id == $building->body->empire->alliance->leader_id
+        ;
 }
 
 sub upgrade {
@@ -66,7 +72,6 @@ sub upgrade {
             level           => 0+$building->level,
             pending_build   => $building->upgrade_status,
         },
-        buildings   => $self->out_buildings($body),
     };
 }
 
@@ -75,8 +80,6 @@ sub view {
     my $session  = $self->get_session({session_id => $session_id, building_id => $building_id, skip_offline => 1});
     my $empire   = $session->current_empire;
     my $building = $session->current_building;
-    my $body     = $building->body;
-
     my $cost = $building->cost_to_upgrade;
     my $can_upgrade = eval{$building->can_upgrade($cost)};
     my $upgrade_reason = $@;
@@ -84,8 +87,6 @@ sub view {
     my $downgrade_reason = $@;
     my $image_after_upgrade = $building->image_level($building->level + 1);
     my $image_after_downgrade = $building->image_level($building->level > 0 ? $building->level - 1 : 0);
-
-    my $status = $self->format_status($session);
 
     my %out = ( 
         building    => {
@@ -121,10 +122,8 @@ sub view {
                 image           => $image_after_downgrade,
             },
             pending_build       => $building->upgrade_status,
-            url                 => $self->app_url,
         },
-        status      => $status,
-        buildings   => $self->out_buildings($body),
+        status      => $self->format_status($session),
     );
     if ($building->is_working) {
         $out{building}{work} = {
@@ -133,7 +132,6 @@ sub view {
             end                 => $building->work_ends_formatted,
         };
     }
-
     return \%out;
 }
 
@@ -206,7 +204,6 @@ sub build {
             level           => 0+$building->level,
             pending_build   => $building->upgrade_status,
         },
-        buildings   => $self->out_buildings($body),
     );
     if ($building->is_working) {
         $out{building}{work} = {
@@ -230,7 +227,7 @@ sub demolish {
         unless ($body->parliament && $body->parliament->effective_level >= 2) {
             confess [1013, 'You need to have a level 2 Parliament to demolish a module.'];
         }
-        if ($building->class =~ /^Lacuna::DB::Result::Building::Module::/) {
+        unless ($self->_is_owner($session, $building)) {
             my $name = $building->name.' ('.$building->x.','.$building->y.')';
             my $proposition = Lacuna->db->resultset('Lacuna::DB::Result::Propositions')->new({
                 type            => 'DemolishModule',
@@ -249,7 +246,6 @@ sub demolish {
     $body->tick;
     return {
         status      => $self->format_status($session, $body),
-        buildings   => $self->out_buildings($body),
     };
 }
 
@@ -265,7 +261,7 @@ sub downgrade {
         unless ($body->parliament && $body->parliament->effective_level >= 2) {
             confess [1013, 'You need to have a level 2 Parliament to downgrade a module.'];
         }
-        if ($building->class =~ /^Lacuna::DB::Result::Building::Module::/) {
+        unless ($self->is_owner($session, $building)) {
             my $name = $building->name.' ('.$building->x.','.$building->y.')';
             my $proposition = Lacuna->db->resultset('Lacuna::DB::Result::Propositions')->new({
                 type            => 'DowngradeModule',

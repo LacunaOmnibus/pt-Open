@@ -1,7 +1,5 @@
 # config-file-type: JSON 1
 {
-   "develop_mode" : 1,
-
    "access_key" : "XXXX",
     "bhg_param" : {
 # If any are set to 0, use default.
@@ -12,19 +10,21 @@
     },
    "beanstalk" : {
       "debug" : 0,
-      "server" : "tle-beanstalkd",
+      "server" : "localhost",
       "ttr" : 120,
       "max_timeouts" : 10,
       "max_reserves" : 10
    },
    "captcha" : {
       # path to the fonts being used.
-      "fontpath" : "/usr/share/fonts",
+      "fontpath" : "/Library/Fonts",
       # .ttf fonts in above path
-      "fonts" : ["dejavu/DejaVuSans"],
+      "fonts" : [ "Ayuthaya", "Chalkduster", "HeadlineA", "Kai" ],
+      # this is 16416 x number of fonts
+      "total" : 65664
    },
    "db" : {
-      "dsn" : "DBI:mysql:host=tle-mysql-server;database=lacuna",
+      "dsn" : "DBI:mysql:lacuna",
       "password" : "lacuna",
       "username" : "lacuna"
    },
@@ -69,7 +69,7 @@
    },
    "memcached" : [
       {
-         "host" : "tle-memcached",
+         "host" : "127.0.0.1",
          "port" : "11211"
       }
    ],
@@ -109,7 +109,7 @@
    "server_keys" : [
       "XXXX"
    ],
-   "server_url" : "http://localhost:8000/",
+   "server_url" : "http://localhost:5000/",
    "starter_zone" : {
 # If zone is set to a valid zone, x & y are confined to within that zone.
 # Coord set to 1 will further narrow area.

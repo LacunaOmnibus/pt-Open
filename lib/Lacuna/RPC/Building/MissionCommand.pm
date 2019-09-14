@@ -4,7 +4,6 @@ use Moose;
 use utf8;
 no warnings qw(uninitialized);
 extends 'Lacuna::RPC::Building';
-use List::Util qw(any);
 
 sub app_url {
     return '/missioncommand';
@@ -25,7 +24,7 @@ sub get_missions {
     my @listed;
     while (my $mission = $missions->next) {
         my $params = $mission->params;
-        next if any { $mission->mission_file_name eq $_ } @listed;
+        next if $mission->mission_file_name ~~ \@listed;
         next if $params->get('max_university_level') < $empire->university_level;
         next if Lacuna->cache->get($mission->mission_file_name, $empire->id);
         push @listed, $mission->mission_file_name;

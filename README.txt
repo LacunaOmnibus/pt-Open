@@ -7,4 +7,3 @@ For more information about The Lacuna Expanse visit http://www.lacunaexpanse.com
 
 For more information about The Lacuna Expanse Developers Program visit
 http://www.lacunaexpanse.com/developers
-

@@ -11,7 +11,6 @@ use Lacuna::Util qw(randint format_date random_element);
 use DateTime;
 use Data::Dumper;
 use Scalar::Util qw(weaken);
-
 no warnings 'uninitialized';
 
 __PACKAGE__->has_many('ships','Lacuna::DB::Result::Ships','body_id');
@@ -380,14 +379,10 @@ around get_status_lite => sub {
     return $out;
 };
 
-
 around get_status => sub {
     my ($orig, $self, $empire) = @_;
     my $out = $orig->($self);
     my $ore;
-
-    
-    
     foreach my $type (ORE_TYPES) {
         $ore->{$type} = $self->$type();
     }
@@ -401,18 +396,10 @@ around get_status => sub {
             is_isolationist => $self->empire->is_isolationist,
         };
         if (defined $empire) {
-
-            # IF this body is owned by the empire
-            # OR this body is a station owned by this empires alliance
-            # OR the empire is a sitter for this bodies owner
-
-            if ($empire->id eq $self->empire_id 
-                or (
-                    $self->isa('Lacuna::DB::Result::Map::Body::Planet::Station')
-                    and $empire->alliance_id && $self->empire->alliance_id == $empire->alliance_id
-                ) 
-                or $empire->babies->search({id => $self->empire_id})->count ) {
-                
+            if ($empire->id eq $self->empire_id or (
+                $self->isa('Lacuna::DB::Result::Map::Body::Planet::Station') &&
+                $empire->alliance_id && $self->empire->alliance_id == $empire->alliance_id )
+                ) {
                 if ($self->needs_recalc) {
                     $self->tick; # in case what we just did is going to change our stats
                 }
@@ -1468,7 +1455,7 @@ sub recalc_stats {
     if ($self->isa('Lacuna::DB::Result::Map::Body::Planet::GasGiant')) {
         $max_plots = min($gas_giant_platforms, $max_plots);
     }
-    elsif ($self->isa('Lacuna::DB::Result::Map::Body::Planet::Station')) {
+    if ($self->isa('Lacuna::DB::Result::Map::Body::Planet::Station')) {
         $max_plots = $stats{size} = $station_command * 3;
     }
     elsif ($self->isa('Lacuna::DB::Result::Map::Body::Planet')) {

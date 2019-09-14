@@ -1,3 +1,4 @@
+#user  nobody;
 worker_processes  1;
 
 error_log  logs/error.log;
@@ -15,8 +16,12 @@ http {
                       '$status $body_bytes_sent "$http_referer" '
                       '"$http_user_agent" "$http_x_forwarded_for"';
 
-    sendfile        on;
+    #access_log  logs/access.log  main;
 
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
     keepalive_timeout  65;
 
     gzip  on;
@@ -26,6 +31,10 @@ http {
     server {
         listen      80;
         server_name 0.0.0.0;
+
+        location = /deploy {
+            proxy_pass http://127.0.0.1:5001/;
+        }
 
         location = / {
             add_header Cache-Control must-revalidate;
@@ -53,13 +62,23 @@ http {
             index  index.html;
         }
 
+        location /starmap.json {
+            proxy_set_header Authorization "";
+            proxy_pass http://s3.amazonaws.com/pt.SERVERNAME.com/starmap.json;
+        }
+
         location ^~ /captcha/ {
-            root   /data/captcha;
+            root   /data/Lacuna-Captcha/public;
             rewrite ^/captcha/(.*)$ /$1 break;
         }
 
+        location /server_overview.json {
+            proxy_set_header Authorization "";
+            proxy_pass http://s3.amazonaws.com/pt.SERVERNAME.com/server_overview.json;
+        }
+
         location ~ /.* {
-            proxy_pass http://tle-server:5000;
+            proxy_pass http://localhost:5000;
             proxy_set_header X-Real-IP $remote_addr;
         }
     }

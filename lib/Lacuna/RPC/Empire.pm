@@ -13,12 +13,6 @@ use Text::CSV_XS;
 use Firebase::Auth;
 use Gravatar::URL;
 use List::Util qw(none);
-use PerlX::Maybe qw(provided);
-use Log::Any qw($log);
-use Data::Dumper;
-
-# logging features are new in this level.
-use JSON::RPC::Dispatcher 0.0508;
 
 sub find {
     my ($self, $session_id, $name) = @_;
@@ -205,35 +199,11 @@ sub benchmark {
 }
 
 
-# Each 'fetch' of a captcha will recover the most recent captcha from the database.
-# it will also trigger a job to create a new captcha (for the next person to make
-# a request).
-#
-
 sub fetch_captcha {
     my ($self, $plack_request) = @_;
-
-    $log->debug("fetch_captcha");
     my $ip = $plack_request->address;
-    my ($captcha) = Lacuna->db->resultset('Captcha')->search(undef, { rows => 1, order_by => { -desc => 'id'} });
-
-    if (not defined $captcha) {
-        # then we have not (yet) created any captchas. Let's make a fake one
-        # but not put it in the database
-        $captcha = Lacuna->db->resultset('Captcha')->new({
-            riddle      => 'Answer 1',
-            solution    => 1,
-            guid        => 'dummy',
-        });
-    }
-
+    my $captcha = Lacuna->db->resultset('Captcha')->find(randint(1,Lacuna->config->get('captcha/total')));
     Lacuna->cache->set('create_empire_captcha', $ip, { guid => $captcha->guid, solution => $captcha->solution }, 60 * 15 );
-
-    # Now trigger a new captcha generation
-
-    my $job = Lacuna->queue->publish('captcha');
-    $log->debug(Dumper($job));
-
     return {
         guid    => $captcha->guid,
         url     => $captcha->uri,
@@ -714,51 +684,6 @@ sub set_status_message {
     return $self->format_status($session);
 }
 
-sub set_survey {
-    my ($self, $session_id, $choice, $comment) = @_;
-    
-    my $session  = $self->get_session({session_id => $session_id});
-    my $empire   = $session->current_empire;
-    
-    my $survey = $empire->survey;
-    if (defined $survey) {
-        $survey->choice($choice);
-        $survey->comment($comment);
-        $survey->update;
-    }
-    else {
-        $empire->create_related('survey', {
-            choice  => $choice,
-            comment => $comment,
-        });
-    }
-        
-    return $self->format_status($session);
-}
-
-sub get_survey {
-    my ($self, $session_id) = @_;
-    
-    my $session  = $self->get_session({session_id => $session_id});
-    my $empire   = $session->current_empire;
-
-    my $survey = $empire->survey;
-    my $out = {
-        choice  => 0,
-        comment => "No Comment",
-    };
-
-    if (defined $survey) {
-        $out = {
-            choice  => $survey->choice,
-            comment => $survey->comment,
-        };
-    }
-    return { survey => $out, status => $self->format_status($session) };
-}
-
-
-
 sub view_public_profile {
     my ($self, $session_id, $empire_id) = @_;
     my $session  = $self->get_session({session_id => $session_id});
@@ -883,7 +808,10 @@ sub boost {
     $empire->planets->update({needs_recalc=>1, boost_enabled=>1});
     $empire->$type($start);
     $empire->update;
-    return $self->view_boosts($session_id);
+    return {
+        status => $self->format_status($session),
+        $type => format_date($empire->$type),
+    };
 }
 
 sub view_boosts {
@@ -1229,12 +1157,12 @@ sub get_species_templates {
 sub view_authorized_sitters
 {
     my ($self, $session_id) = @_;
-    my $session = $self->get_session({session_id => $session_id});
+    my $session = $self->get_session($session_id);
     my $baby = $session->current_empire();
 
     my $rs = $baby->sitters()
         ->search(
-                 { },
+                 { expiry => { '>' => \q[UTC_TIMESTAMP()] } },
                  {
                      '+select' => [ 'me.expiry' ],
                      '+as'     => [ 'expiry' ],
@@ -1242,15 +1170,13 @@ sub view_authorized_sitters
                  }
                 );
 
-    my $parser = Lacuna->db->storage->datetime_parser;
-
     my @auths;
     while (my $e = $rs->next)
     {
         push @auths, {
             id     => $e->id,
             name   => $e->name,
-            expiry => format_date($parser->parse_datetime($e->get_column('expiry'))),
+            expiry => $e->get_column('expiry'),
         };
     }
 
@@ -1307,7 +1233,7 @@ sub authorize_sitters
     my @bad_ids;
     for my $sitter (@sitters)
     {
-        my $sit = eval { ref $sitter && $sitter->isa('Lacuna::DB::Result::Empire') } ?
+        my $sit = eval { $sitter->isa('Lacuna::DB::Result::Empire') } ?
             $sitter :
             Lacuna->db->empire($sitter);
         if ($sit)
@@ -1331,73 +1257,36 @@ sub authorize_sitters
     return $rc;
 }
 
-sub deauthorize_sitters {
+sub deauthorize_sitters
+{
     my ($self, $session_id, $opts) = @_;
-
     my $session  = $self->get_session({session_id => $session_id});
-    my $baby = $session->current_empire;
+    my $baby = $self->current_empire;
 
     my $baby_id = $session->empire_id;
 
+    confess [1009, "The 'empires' option must be an array of empire IDs"]
+        unless $opts->{empires} and ref $opts->{empires} eq 'ARRAY' and
+        none { /\D/ } @{$opts->{empires}};
+
     my $dtf = Lacuna->db->storage->datetime_parser;
     my $now = $dtf->format_datetime(DateTime->now);
-    my $rs = Lacuna->db->resultset('SitterAuths');
-    
-    if (defined $opts->{empires}) {
-        confess [1009, "The 'empires' option must be an array of empire IDs"]
-            unless ref $opts->{empires} eq 'ARRAY'
-            and none { /\D/ } @{$opts->{empires}};
 
-        # set expiry to immediate
-        $rs->search({baby_id => $baby_id, sitter_id => { in => $opts->{empires} }})
-            ->update({expiry => $now});
-    }
-    elsif (defined $opts->{deauthorize_all}) {
-        # set expiry to immediate
-        $rs->search({baby_id => $baby_id })->update({expiry => $now});
-    }
-    else {
-        confess [1009, "You must specify either an 'empires' or a 'deauthorize_all' option"];
-    }
+    # set expiry to immediate
+    my $rs = Lacuna->db->resultset('SitterAuths');
+    $rs->search({baby_id => $baby_id, sitter_id => { in => $opts->{empires} }})
+        ->update({expiry => $now});
 
     return $self->view_authorized_sitters($session);
 }
 
-sub _rewrite_request_for_logging {
-    my ($method, $params) = @_;
-    if ($method eq 'login') {
-        $params->[1] = 'xxx';
-    }
-    elsif ($method eq 'change_password') {
-        $params->[$_] = 'xxx' for 0..2;
-    }
-    elsif ($method eq 'reset_password') {
-        $params->[$_] = 'xxx' for 1..2;
-    }
-    elsif ($method eq 'create') {
-        $params = {
-            @$params,
-            password => 'xxx',
-        };
-    }
-    elsif ($method eq 'edit_profile') {
-        $params->[1] = {
-            %{$params->[1]},
-            provided $params->[1]->{sitter_password}, sitter_password => 'xxx',
-        }
-    }
-    return $params;
-}
-
 __PACKAGE__->register_rpc_method_names(
-    { name => "create", options => { with_plack_request => 1, log_request_as => \&_rewrite_request_for_logging } },
+    { name => "create", options => { with_plack_request => 1 } },
     { name => "fetch_captcha", options => { with_plack_request => 1 } },
-    { name => "login", options => { with_plack_request => 1, log_request_as => \&_rewrite_request_for_logging } },
+    { name => "login", options => { with_plack_request => 1 } },
     { name => "benchmark", options => { with_plack_request => 1 } },
     { name => "found", options => { with_plack_request => 1 } },
-    { name => "reset_password", options => { with_plack_request => 1, log_request_as => \&_rewrite_request_for_logging } },
-    { name => 'change_password', options => { log_request_as => \&_rewrite_request_for_logging } },
-    { name => 'edit_profile', options => { log_request_as => \&_rewrite_request_for_logging } },
+    { name => "reset_password", options => { with_plack_request => 1 } },
     qw(
     redefine_species redefine_species_limits
     get_invite_friend_url
@@ -1406,16 +1295,16 @@ __PACKAGE__->register_rpc_method_names(
     invite_friend
     redeem_essentia_code
     enable_self_destruct disable_self_destruct
+    change_password
     set_status_message
     find
-    view_profile view_public_profile
+    view_profile edit_profile view_public_profile
     is_name_available
     logout
     get_full_status get_status
     boost_building boost_storage boost_water boost_energy boost_ore
     boost_food boost_happiness boost_spy_training view_boosts
     view_authorized_sitters authorize_sitters deauthorize_sitters
-    get_survey set_survey
     ),
 );
 

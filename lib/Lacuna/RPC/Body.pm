@@ -13,8 +13,6 @@ use List::MoreUtils qw(uniq);
 use Carp;
 use feature 'switch';
 
-with "Lacuna::RPC::Role::Building";
-
 sub get_status {
     my ($self, $session_id, $body_id) = @_;
     my $session = $self->get_session({session_id => $session_id, body_id => $body_id});
@@ -110,14 +108,34 @@ sub get_buildings {
         $body->needs_surface_refresh(0);
         $body->update;
     }
-
-    return {
-        buildings   => $self->out_buildings($body),
-        body        => {
-            surface_image   => $body->surface,
-        },
-        status      => $self->format_status($session, $body),
-    };
+    my %out;
+    my @buildings = @{$body->building_cache};
+    foreach my $building (@buildings) {
+        $out{$building->id} = {
+            url     => $building->controller_class->app_url,
+            image   => $building->image_level,
+            name    => $building->name,
+            x       => $building->x,
+            y       => $building->y,
+            level   => $building->level,
+            efficiency => $building->efficiency,
+        };
+        if ($building->is_upgrading) {
+            $out{$building->id}{pending_build} = $building->upgrade_status;
+        }
+        if ($building->is_working) {
+            $out{$building->id}{work} = {
+                seconds_remaining   => $building->work_seconds_remaining,
+                start               => $building->work_started_formatted,
+                end                 => $building->work_ends_formatted,
+            };
+        }
+        if ($building->efficiency < 100) {
+            $out{$building->id}{repair_costs} = $building->get_repair_costs;
+        }
+    }
+    
+    return {buildings=>\%out, body=>{surface_image => $body->surface}, status=>$self->format_status($session, $body)};
 }
 
 sub repair_list {
@@ -455,7 +473,6 @@ sub get_buildable {
     my %plans;
     my @buildable_plans = sort {$a->extra_build_level <=> $b->extra_build_level} grep{$_->level == 1} @{$body->plan_cache};
     for my $plan (@buildable_plans) {
-        next unless eval { $plan->class->can_really_be_built };
         push @buildable, $plan->class->controller_class;
         $plans{$plan->class} = $plan->extra_build_level;
     }
@@ -465,7 +482,7 @@ sub get_buildable {
         my $building = $building_rs->new(\%properties);
         my @tags = $building->build_tags;
         if ($properties{class} ~~ [keys %plans]) {
-            push @tags, 'Plan';
+            push @tags, 'Plan',
         }
         if ($tag) {
             next unless ($tag ~~ \@tags);
@@ -474,7 +491,7 @@ sub get_buildable {
         my $can_build = eval{$body->has_met_building_prereqs($building, $cost)};
         my $reason = $@;
         if ($can_build) {
-            push @tags, 'Now';
+            push @tags, 'Now';          
         }
         elsif (ref $reason ne 'ARRAY') {
             confess $reason;
@@ -489,7 +506,7 @@ sub get_buildable {
             url         => $class->app_url,
             image       => $building->image_level,
             build       => {
-                can         => ($can_build) ? 1 : 0,
+                can         => ($can_build) ? 1 : 0,                
                 cost        => $cost,
                 reason      => $reason,
                 tags        => \@tags,

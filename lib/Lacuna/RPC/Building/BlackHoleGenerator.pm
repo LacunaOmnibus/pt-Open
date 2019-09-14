@@ -231,7 +231,7 @@ sub find_target {
         $target_type = "star";
         $target_word =~ s/:?orbit:?//g;
 
-        if ($target && $target_params->{orbit} && 1 <= $target_params->{orbit} && $target_params->{orbit} <= 8) {
+        if ($target && exists $target_params->{orbit} && 1 <= $target_params->{orbit} && $target_params->{orbit} <= 8) {
             my $star = $target;
             my $orbit = int($target_params->{orbit});
             my ($x, $y) = ($star->x + $orbits[$orbit][0], $star->y + $orbits[$orbit][1]); #++);
@@ -855,12 +855,11 @@ sub generate_singularity {
         if ($target->id == $body->star->id) {
             confess [1009, "You are already in that system"];
         }
-# This is handled now by check_member_laws
-#        if ($target->station_id) {
-#            unless ($body->empire->alliance_id && $target->station->alliance_id == $body->empire->alliance_id) {
-#                confess [1009, 'That star system is claimed by '.$tstar->station->alliance->name.'.'];
-#            }
-#        }
+        if ($target->station_id) {
+            unless ($body->empire->alliance_id && $target->station->alliance_id == $body->empire->alliance_id) {
+                confess [1009, 'That star system is claimed by '.$tstar->station->alliance->name.'.'];
+            }
+        }
         # Let's check all planets in our system and target system
         qualify_moving_sys($building, $target);
 #Need to add to qualify
