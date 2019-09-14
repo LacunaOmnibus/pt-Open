@@ -50,6 +50,7 @@ maybe this? `apt remove `aptitude -F %p search ‘~o’ | grep -E -v ^lib``
 - `cd /etc/apt/apt.conf.d/`         
 - `sudo rm 50unattended-upgrades.ucf-old`
 https://linuxconfig.org/how-to-upgrade-debian-8-jessie-to-debian-9-stretch
+[pic1]
 ```
 sudo apt remove linux-headers-4.16.0-0.steamos2.1-amd64 linux-headers-4.16.0-0.steamos2.1-common linux-image-4.16.0-0.steamos2.1-amd64 linux-kbuild-4.16
 sudo nano /etc/apt/sources.list
@@ -82,7 +83,12 @@ sudo nano /etc/apt/sources.list.d/steamos-beta-repo.list
 deb http://repo.steampowered.com/steamos clockwerk_beta main contrib non-free
 ```
 # Command line
-
+- *We have removed kernel stuff, don't reboot till we get new kernel in!*
+```
+sudo apt update && sudo apt upgrade -y
+```
+# We say yes
+[pic2]
 ```
 sudo apt install ca-certificates curl gnupg2 apt-transport-https software-properties-common git -y
 sudo sh -c "echo deb https://apt.dockerproject.org/repo debian-jessie main > /etc/apt/sources.list.d/docker.list"
