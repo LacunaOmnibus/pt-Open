@@ -54,9 +54,31 @@ https://linuxconfig.org/how-to-upgrade-debian-8-jessie-to-debian-9-stretch
 sudo apt remove linux-headers-4.16.0-0.steamos2.1-amd64 linux-headers-4.16.0-0.steamos2.1-common linux-image-4.16.0-0.steamos2.1-amd64 linux-kbuild-4.16
 sudo nano /etc/apt/sources.list
 ```
-# Replace `sources.list`:
+# Replace in `sources.list`:
+- `brewmaster` to `clockwerk`
+- `jessie` becomes `stretch`
+- remove `deb-src` & `contrib non-free` for sanity (limit what can go wrong) left clockwerk in because that is Steam designed for us.
 ```
+## internal SteamOS repo
+deb http://repo.steampowered.com/steamos clockwerk main contrib non-free
+deb-src http://repo.steampowered.com/steamos clockwerk main contrib non-free
 
+deb http://httpredir.debian.org/debian stretch main
+# deb-src http://httpredir.debian.org/debian stretch main
+
+deb http://httpredir.debian.org/debian stretch-updates main
+# deb-src http://httpredir.debian.org/debian stretch-updates main
+
+deb http://security.debian.org/ stretch/updates main
+# deb-src http://security.debian.org/ stretch/updates main
+```
+```
+sudo nano /etc/apt/sources.list.d/steamos-beta-repo.list
+```
+# Replace in `steamos-beta-repo.list`:
+- `brewmaster_beta` to `clockwerk_beta`
+```
+deb http://repo.steampowered.com/steamos clockwerk_beta main contrib non-free
 ```
 
 ```
