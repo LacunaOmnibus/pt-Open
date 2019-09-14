@@ -37,6 +37,25 @@ deb-src http://security.debian.org/ jessie/updates main contrib non-free
 # Update to Jessie
 ```
 sudo apt update && sudo apt upgrade -y
+aptitude search '~o'
+```
+# Optional
+maybe this? `apt remove `aptitude -F %p search ‘~o’ | grep -E -v ^lib``
+- `sudo apt-mark showhold`
+- `sudo apt-get autoremove` apt?
+- `cd /etc/apt/apt.conf.d/`         
+- `sudo rm 50unattended-upgrades.ucf-old`
+https://linuxconfig.org/how-to-upgrade-debian-8-jessie-to-debian-9-stretch
+```
+sudo apt remove linux-headers-4.16.0-0.steamos2.1-amd64 linux-headers-4.16.0-0.steamos2.1-common linux-image-4.16.0-0.steamos2.1-amd64 linux-kbuild-4.16
+sudo nano /etc/apt/sources.list
+```
+# Replace `sources.list`:
+```
+
+```
+
+```
 sudo apt install ca-certificates curl gnupg2 apt-transport-https software-properties-common git -y
 sudo sh -c "echo deb https://apt.dockerproject.org/repo debian-jessie main > /etc/apt/sources.list.d/docker.list"
 sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
