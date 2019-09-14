@@ -1,7 +1,7 @@
-FROM centos:6
+FROM centos:7
 
 RUN yum install -y cpan wget tar gcc gcc-c++ zlib-devel openssl-devel expat expat-devel ncurses-devel
-RUN yum install -y glibc-devel git mysql mysql-devel libxml2 libxml2-devel mysql-server gd gd-devel
+RUN yum install -y glibc-devel git mysql mysql-devel libxml2 libxml2-devel mysql-server gd gd-devel cronie bzip2
 
 RUN mkdir /downloads
 RUN mkdir /data
@@ -10,15 +10,19 @@ RUN mkdir /data/Lacuna-Server
 RUN mkdir /data/Lacuna-Server/third_party
 
 WORKDIR /downloads
-RUN wget -q --output-document=perl-5.12.1.tar.gz http://www.cpan.org/src/5.0/perl-5.12.1.tar.gz
-RUN tar xfz perl-5.12.1.tar.gz
-RUN rm --interactive=never perl-5.12.1.tar.gz
-WORKDIR perl-5.12.1
+RUN curl -SL https://cpan.metacpan.org/authors/id/R/RJ/RJBS/perl-5.20.0.tar.bz2 -o perl-5.20.0.tar.bz2 \
+    && echo 'e925e4fc36e90eace19a1ca850f912618ba6788f *perl-5.20.0.tar.bz2' | sha1sum -c - \
+    && tar --strip-components=1 -xjf perl-5.20.0.tar.bz2 \
+    && rm perl-5.20.0.tar.bz2
+WORKDIR perl-5.20.0
 RUN ./Configure -Dprefix=/data/apps -des
 RUN make
 RUN make install
 WORKDIR /downloads
-RUN rm -rf perl-5.12.1
+RUN rm -rf perl-5.20.0
+RUN curl -LO https://raw.githubusercontent.com/miyagawa/cpanminus/master/cpanm \
+    && chmod +x cpanm \
+    && ./cpanm App::cpanminus
 
 WORKDIR /downloads
 RUN wget http://www.monkey.org/~provos/libevent-1.4.14b-stable.tar.gz
