@@ -72,7 +72,7 @@ deb http://httpredir.debian.org/debian stretch-updates main
 deb http://security.debian.org/ stretch/updates main
 # deb-src http://security.debian.org/ stretch/updates main
 ```
-# Ssh:`1` (continue in your terminal/shell/whatever you call it)
+# Command line
 ```
 sudo nano /etc/apt/sources.list.d/steamos-beta-repo.list
 ```
@@ -81,7 +81,8 @@ sudo nano /etc/apt/sources.list.d/steamos-beta-repo.list
 ```
 deb http://repo.steampowered.com/steamos clockwerk_beta main contrib non-free
 ```
-# Ssh:`1`
+# Command line
+
 ```
 sudo apt install ca-certificates curl gnupg2 apt-transport-https software-properties-common git -y
 sudo sh -c "echo deb https://apt.dockerproject.org/repo debian-jessie main > /etc/apt/sources.list.d/docker.list"
