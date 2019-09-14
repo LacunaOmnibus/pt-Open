@@ -1,3 +1,5 @@
+Note: Not complete yet.
+
 The files contained herein are represent the code that drives the server for the
 game called "The Lacuna Expanse". 
 
