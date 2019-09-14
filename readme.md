@@ -33,8 +33,7 @@ deb-src http://cdn-fastly.deb.debian.org/debian/ jessie main contrib non-free
 deb http://security.debian.org/ jessie/updates main contrib non-free
 deb-src http://security.debian.org/ jessie/updates main contrib non-free
 ```
-[RE: Above] *gitlab doesn't **copy / paste** correctly to nano terminal on Win 10 so link:*
-- https://github.com/communityus-private/SteamOS/wiki
+(GitLab) https://github.com/communityus/pt-Open/blob/master/README.txt
 # Update to Jessie
 ```
 sudo apt update && sudo apt upgrade -y
