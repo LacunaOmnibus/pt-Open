@@ -96,6 +96,8 @@ sudo apt update && sudo apt upgrade -y
 [pic4]
 [pic5]
 ```
+sudo apt remove gir1.2-gnomekeyring-1.0 gir1.2-gweather-3.0 gir1.2-notify-0.7 gnome-software-common libappstream-glib8 libasan3 libavresample3 libavutil55 libbs2b0 libgnome-autoar-common libgnome-keyring-common libgnome-keyring0 libgom-1.0-0 libgom-1.0-common libgrilo-0.3-0 libgtkspell3-3-0 libhyphen0 libnuma1 libpcre2-8-0 libquvi-scripts-0.9 libserd-0-0 libshine3 libsord-0-0 libsoxr0 libsratom-0-0 libssh-gcrypt-4 libswresample2 libswscale4 libx265-95 libxcb-res0 libzvbi-common libzvbi0 lua-bitop lua-expat lua-json lua-lpeg lua-socket python3-requests python3-urllib3  
+sudo apt remove libavutil55 libbs2b0 libcrystalhd3 libfwupd1 libgcab-1.0-0 libgcc-6-dev libgnome-autoar-0-0 libpcre2-8-0 libserd-0-0 libsord-0-0 libsoxr0 libsratom-0-0 libva-drm1 libva-x11-1 libvpx4 libwildmidi2 libavutil55 libbs2b0 libcrystalhd3 libfwupd1 libhyphen0 libjxr-tools libjxr0 liblilv-0-0 liblua5.3-0 libmediaart-2.0-0 libmpcdec6 libmpx2 libnpth0 libswscale4 libtwolame0 libva-drm1 libva-x11-1 libvpx4 libwebpmux2 libwildmidi2 libwmf0.2-7 libx264-148
 sudo apt dist-upgrade
 ```
 ```
