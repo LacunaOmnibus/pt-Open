@@ -105,6 +105,9 @@ could need to do below plus a bunch of auto-remove / clean
 - but i think all we do is:
 ```
 sudo aptitude dist-upgrade
+```
+# Say yes a lot (see we were brainwashing you not to question us :-) )
+```
 sudo apt --fix-broken install
 sudo apt dist-upgrade
 sudo apt-get dist-upgrade
