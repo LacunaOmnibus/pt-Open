@@ -1,5 +1,5 @@
 ### Installing on SteamOS Brewmaster_Beta (Debian 8:Jessie)
-For Mac: 
+For Mac: https://github.com/communityus/pt-Open/blob/master/docker/README-Mac.md
 
 ## Setting up your dev environment
 
