@@ -41,6 +41,7 @@ aptitude search '~o'
 ```
 # Optional
 maybe this? `apt remove `aptitude -F %p search ‘~o’ | grep -E -v ^lib``
+- `dpkg -C`
 - `sudo apt-mark showhold`
 - `sudo apt-get autoremove` apt?
 - `cd /etc/apt/apt.conf.d/`         
