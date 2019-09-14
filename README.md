@@ -13,7 +13,7 @@ http://www.lacunaexpanse.com/developers
 ```
 cd ~
 passwd
-sudo apt install openssh-server
+sudo apt install openssh-server -y
 ```
 # Remote in 2 or 3 sessions
 `ssh desktop@192.168.0.37`  |  192.168.x.x (x = your server IP)
@@ -38,22 +38,22 @@ deb-src http://security.debian.org/ jessie/updates main contrib non-free
 # Update to Jessie
 ```
 sudo apt update && sudo apt upgrade -y
-sudo apt install ca-certificates curl gnupg2 apt-transport-https software-properties-common git
+sudo apt install ca-certificates curl gnupg2 apt-transport-https software-properties-common git -y
 sudo sh -c "echo deb https://apt.dockerproject.org/repo debian-jessie main > /etc/apt/sources.list.d/docker.list"
 sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 sudo apt update
 sudo apt install docker-engine -y
 ```
-# Choose Branches i.e. "pt"
+# Choose Branches i.e. "Captcha"
 ```
-git clone https://github.com/communityus-private/Lacuna-Web-Client.git pt-Client
-git clone https://github.com/communityus-private/Lacuna-Server-Open.git pt-Open
-mkdir mkdir ~/pt-Open/etc
-cd ~/pt-Open/etc-templates
+git clone https://github.com/communityus-private/Lacuna-Web-Client
+git clone https://github.com/communityus-private/Lacuna-Server-Open
+mkdir ~/Lacuna-Server-Open/etc
+cd ~/Lacuna-Server-Open/etc-templates
 cp lacuna.conf.docker ../etc/lacuna.conf
 cp log4perl.conf.docker ../etc/log4perl.conf
 cp nginx.conf.docker ../etc/nginx.conf
-cd ~/pt-Open/docker
+cd ~/Lacuna-Server-Open/docker
 ```
 # Options
 ```
