@@ -14,107 +14,7 @@ say "Generating Riddles";
 
 my %riddles = (  
     "1x1x1=_"     => "1",
-    "0x0x0=_"     => "0",
-    "0+0+0=_"     => "0",
-    "0-0-0=_"     => "0",
-    "1/1=_"       => "1",
-    "2/1=_"       => "2",
-    "2/2=_"       => "1",
-    "4/2=_"       => "2",
-    "6/2=_"       => "3",
-    "6/3=_"       => "2",
-    "9/3=_"       => "3",
-    "10/2=_"      => "5",
-    "10/5=_"      => "2",
-    "12/3=_"      => "4",
-    "12/4=_"      => "3",
 );
-
-for my $a (1..9) { 
-    for my $b (1..9) { 
-        $riddles{$a.'+'.$b.'=_'} = $a + $b;
-        $riddles{$a.'-'.$b.'=_'} = $a - $b;
-        $riddles{$a.'x'.$b.'=_'} = $a * $b;
-    }
-}
-
-#for my $a ('a'..'c') {
-#    for (1..8) {
-#        my $string = $a++;
-#        my $answer = $a++;
-#        $string .= '_';
-#        $string .= $a++;
-#        $riddles{$string} = $answer;
-#    }
-#}
-#
-#for my $a ('1'..'3') {
-#    for (1..3) {
-#        my $string = $a++;
-#        my $answer = $a++;
-#        $string .= ',_,';
-#        $string .= $a++;
-#        $riddles{$string} = $answer;
-#    }
-#}
-
-for my $a ('a'..'c') {
-    for (1..4) {
-        my $string = $a++;
-        $string .= $a++;
-        my $answer = $a++;
-        $answer .= $a++;
-        $string .= '_';
-        $string .= $a++;
-        $string .= $a++;
-        $riddles{$string} = $answer;
-    }
-}
-
-for my $a ('a'..'c') {
-    for (1..4) {
-        my $string = $a++;
-        $string .= uc($a++);
-        my $answer = $a++;
-        $answer .= uc($a++);
-        $string .= '_';
-        $string .= $a++;
-        $string .= uc($a++);
-        $riddles{$string} = $answer;
-    }
-}
-
-for my $a ('1'..'2') {
-    for (1..2) {
-        my $string = $a++;
-        $string .= ',';
-        $string .= $a++;
-        my $answer = $a++;
-        $answer .= ',';
-        $answer .= $a++;
-        $string .= ',_,';
-        $string .= $a++;
-        $string .= ',';
-        $string .= $a++;
-        $riddles{$string} = $answer;
-    }
-}
-
-for my $a ('a'..'i') {
-    for (1..2) {
-        my $string = $a++;
-        $string .= $a++;
-        $string .= $a++;
-        my $answer = $a++;
-        $answer .= $a++;
-        $answer .= $a++;
-        $string .= '_';
-        $string .= $a++;
-        $string .= $a++;
-        $string .= $a++;
-        $riddles{$string} = $answer;
-    }
-}
 
 say "Riddle Count: ".scalar(keys %riddles);
 
@@ -169,7 +69,6 @@ foreach my $riddle (keys %riddles) {
                     open my $file, '>', $dir.'/'.$guid.'.png';
                     print {$file} $image;
                     close $file;
-                    $counter++;
                     $captchas->new({
                         id      => $counter,
                         guid    => $guid,
@@ -183,7 +82,3 @@ foreach my $riddle (keys %riddles) {
 }
 
 say "Generated $counter Captchas";
-
-say "Exporting Captcha SQL...";
-say "Please enter your MySQL root password:";
-system "mysqldump -uroot -p --no-create-info lacuna captcha > /data/captcha/captcha.sql";

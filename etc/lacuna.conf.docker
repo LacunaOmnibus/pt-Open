@@ -10,7 +10,7 @@
     },
    "beanstalk" : {
       "debug" : 0,
-      "server" : "localhost",
+      "server" : "tle-beanstalkd",
       "ttr" : 120,
       "max_timeouts" : 10,
       "max_reserves" : 10
@@ -21,10 +21,10 @@
       # .ttf fonts in above path
       "fonts" : [ "Ayuthaya", "Chalkduster", "HeadlineA", "Kai" ],
       # this is 16416 x number of fonts
-      "total" : 65664
+      "total" : 1
    },
    "db" : {
-      "dsn" : "DBI:mysql:lacuna",
+      "dsn" : "DBI:mysql:host=tle-mysql-server;database=lacuna",
       "password" : "lacuna",
       "username" : "lacuna"
    },
@@ -69,7 +69,7 @@
    },
    "memcached" : [
       {
-         "host" : "127.0.0.1",
+         "host" : "tle-memcached",
          "port" : "11211"
       }
    ],
@@ -109,7 +109,7 @@
    "server_keys" : [
       "XXXX"
    ],
-   "server_url" : "http://localhost:5000/",
+   "server_url" : "http://localhost:8000/",
    "starter_zone" : {
 # If zone is set to a valid zone, x & y are confined to within that zone.
 # Coord set to 1 will further narrow area.

@@ -5,6 +5,8 @@ use lib '/data/Lacuna-Server/lib';
 use Lacuna::DB;
 use Lacuna;
 use Lacuna::Util qw(randint format_date);
+use Lacuna::CaptchaFactory;
+
 use Getopt::Long;
 use App::Daemon qw(daemonize );
 use Data::Dumper;
@@ -15,26 +17,23 @@ use Log::Log4perl qw(:levels);
 # command line arguments:
 #
 my $daemonize   = 1;    # run the script as a daemon
-my $loop        = 1;    # loop continuously waiting for jobs
 my $initialize  = 1;    # (re)initialize the queue from the database
-my $timeout     = 1;    # timeout after an hour
 our $quiet      = 1;    # don't output any text
 
 GetOptions(
     'daemonize!'    => \$daemonize,
-    'loop!'         => \$loop,
     'quiet!'        => \$quiet,
     'initialize!'   => \$initialize,
-    'timeout!'      => \$timeout,
 );
 
 $App::Daemon::loglevel = $quiet ? $WARN : $DEBUG;
-$App::Daemon::logfile  = '/tmp/schedule_ship_arrival.log';
+$App::Daemon::logfile  = '/tmp/schedule_captcha.log';
+$App::Daemon::as_user  = 'root';
+$App::Daemon::as_group = 'root';
 
 chdir '/data/Lacuna-Server/bin';
 
-my $timeout_seconds = 60 * 60; # (one hour)
-my $pid_file        = '/data/Lacuna-Server/bin/schedule_ship_arrival.pid';
+my $pid_file        = '/data/Lacuna-Server/bin/schedule_captcha.pid';
 
 my $start = time;
 
@@ -49,36 +48,6 @@ if (-f $pid_file) {
         out("Killing previous job, PID=$PID");
         kill 9, $PID;
         sleep 5;
-    }
-}
-
-if ($initialize) {
-    # (re)initialize all the jobs on the queues, replacing any 
-    # existing jobs
-    out('Reinitializing all jobs');
-    out('Deleting existing jobs');
-    my $schedule_rs = Lacuna->db->resultset('Schedule')->search({
-        parent_table    => 'Ships',
-        task            => 'arrive',
-    });
-    while (my $schedule = $schedule_rs->next) {
-        # note. deleting the DB entry also deletes the entry on beanstalk
-        $schedule->delete;
-    }
-
-    out('Adding ship arrivals');
-    my $ship_rs = Lacuna->db->resultset('Ships')->search({
-        task => 'Travelling',
-    });
-    while (my $ship = $ship_rs->next) {
-        # add to queue
-        my $schedule = Lacuna->db->resultset('Schedule')->create({
-            delivery        => $ship->date_available,
-            queue           => 'arrive_queue',
-            parent_table    => 'Ships',
-            parent_id       => $ship->id,
-            task            => 'arrive',
-        });
     }
 }
 
@@ -109,26 +78,43 @@ out("queue = $queue");
 # Main processing loop
 
 out('Started');
-# Timeout after an hour
 eval {
-    local $SIG{ALRM} = sub { die "alarm\n" };
-    alarm $timeout_seconds if $timeout;
     
     LOOP: do {
-        my $job     = $queue->consume('arrive_queue');
-        my $args    = $job->args;
-        $job->delete, next unless ref $args eq 'HASH';
-        my $task    = $args->{task};
-        my $task_args = $args->{args};
+        my $job     	= $queue->consume('captcha');
     
         out('job received ['.$job->id.']');
 
-        my $payload = $job->payload;
-
         try {
             # process the job
-            out("Process class=$payload task=$task");
-            $payload->$task($task_args);
+
+            my $captcha = Lacuna::CaptchaFactory->new({
+                develop_mode    => 1,
+            });
+            $captcha->construct;
+            out("Captcha created [".$captcha->guid."]");
+
+            # Remove all captchas older than 1hr (except for one)
+            #
+            # select * from captcha where created < DATE_SUB(now(), INTERVAL 1 HOUR) order by id desc;
+            #
+            my $captchas = Lacuna->db->resultset('Captcha')->search({
+                created => \"< DATE_SUB(now(), INTERVAL 1 HOUR)",
+            },{
+                order_by => { -desc => 'id' },
+            });
+            # Ignore the first one (if any)
+            my $captcha = $captchas->next;
+            while ($captcha = $captchas->next) {
+                out("Deleting captcha [".$captcha->id."]");
+
+                my $prefix  = substr($captcha->guid, 0,2);
+                my $file    = "/data/captcha/$prefix/".$captcha->guid.".png";
+                out("Deleting file [$file]");
+                unlink($file);
+                $captcha->delete;
+            }
+
             out("Processing done. Delete job ".$job->id);
             $job->delete;
         }
@@ -137,7 +123,7 @@ eval {
             out("Job ".$job->id." failed: $_");
             $job->bury;
         };
-    } while ($loop);
+    } while (1);
 };
 if ($@) {
     die unless $@ eq "alarm\n"; # propagate unexpected errors
@@ -156,6 +142,7 @@ exit 0;
 sub out {
     my ($message) = @_;
     my $logger = Log::Log4perl->get_logger;
+    print STDERR $message."\n";
     $logger->info($message);
 }
 

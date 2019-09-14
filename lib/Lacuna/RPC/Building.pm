@@ -21,7 +21,7 @@ sub to_app_with_url {
 sub _is_owner {
     my ($self, $session, $building) = @_;
     return
-        $session->current_empire->id == $building->body->empire->id or
+        $session->current_empire->id == $building->body->empire->id ||
         $session->current_empire->id == $building->body->empire->alliance->leader_id
         ;
 }
@@ -261,7 +261,7 @@ sub downgrade {
         unless ($body->parliament && $body->parliament->effective_level >= 2) {
             confess [1013, 'You need to have a level 2 Parliament to downgrade a module.'];
         }
-        unless ($self->is_owner($session, $building)) {
+        unless ($self->_is_owner($session, $building)) {
             my $name = $building->name.' ('.$building->x.','.$building->y.')';
             my $proposition = Lacuna->db->resultset('Lacuna::DB::Result::Propositions')->new({
                 type            => 'DowngradeModule',
