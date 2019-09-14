@@ -15,6 +15,7 @@ cd ~
 passwd
 sudo apt install openssh-server -y
 ```
+Upgrading distribution can cause screen to go black, you will want to be on a remote machine. Secure it after.
 # Remote in 2 or 3 sessions
 `ssh desktop@192.168.0.37`  |  192.168.x.x (x = your server IP)
 ```
@@ -37,6 +38,7 @@ deb http://security.debian.org/ jessie/updates main contrib non-free
 deb-src http://security.debian.org/ jessie/updates main contrib non-free
 ```
 (GitLab) https://github.com/communityus/pt-Open/blob/master/README.txt
+(Mirrors) https://linuxconfig.org/debian-apt-get-stretch-sources-list
 # Update to Jessie
 ```
 sudo apt update && sudo apt upgrade -y
