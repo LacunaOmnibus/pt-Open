@@ -89,7 +89,7 @@ sudo apt update && sudo apt upgrade -y
 ```
 # We say yes
 [pic2]
-# We say yes a lot! (1,2...
+# We say yes a lot! (`your choice`) (1,2...
 [pic3]
 ```
 sudo apt install ca-certificates curl gnupg2 apt-transport-https software-properties-common git -y
