@@ -1,3 +1,8 @@
+# GitLab Only
+[RE: Above] gitlab doesn't copy / paste correctly to nano terminal on Win 10 so link:
+https://github.com/communityus-private/SteamOS/wiki
+
+
 The files contained herein are represent the code that drives the server for the
 game called "The Lacuna Expanse". 
 
