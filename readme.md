@@ -134,6 +134,7 @@ sudo apt-get dist-upgrade
 sudo reboot
 ```
 Steam will update and you will see a black screen after for 2 min.
+# If you forget to tell steam to auto login to desktop you will need to do this.
 ```
 perhaps tell steam to autologin to desktop? is it trying to laucnhsteam? pkill steam, steam has not password.
 anyways it launches in 2-3 minuts.
