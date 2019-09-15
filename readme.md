@@ -165,10 +165,29 @@ sudo apt install docker-engine -y
 git clone https://github.com/communityus-private/Lacuna-Web-Client
 git clone https://github.com/communityus-private/Lacuna-Server-Open Lacuna-Server
 ```
+
+```
+sudo gpasswd -a $USER docker
+newgrp docker
+docker run hello-world
+```
+# Clean up
+```
+docker ps -a
+docker container rm [CONTAINER ID] # do fancy string thing or just type in the alpha numeric id (copy it! [select area then right click in terminal] )
+docker rmi hello-world
+```
+Ref: https://linoxide.com/linux-how-to/use-docker-without-sudo-ubuntu/
+
+If you don't want to add currently logged in user, but instead some other, you change $USER for the username of that user. Note that user must be allowed to use sudo.
+
 # continue here:
 https://github.com/communityus/pt-Open/tree/master/docker
 - that readme is much closer to what we need for now.
 
+
+[Options two:]
+`sudo setfacl -m user:desktop:rw /var/run/docker.sock`
 
 # STOP - Below is not done yet
 ```
