@@ -109,7 +109,11 @@ This is the Server Code. You can start and restart your development server
 from within this container. This will put you into the Docker container in the 
 bash shell. Normally you will just run the command
 
-    $ ./startdev
+
+
+    $ ./startdev(.sh) but we are not ready yet.
+
+Finish setup below:
 
 But there are a few things you need to do first (see below, Initial Configuration).
 
