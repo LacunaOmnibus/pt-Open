@@ -35,6 +35,13 @@ order
     $ ./run_tle_beanstalk.sh
     $ ./run_tle_memcached.sh
     $ ./run_tle_mysql_server.sh
+    
+Now we need to build our TLE server:
+```
+docker build -t lacuna/tle-server -f tle-server/Dockerfile .
+```
+Now we can run the server from our local docker image:
+
     $ ./run_tle_server.sh (leave this running in a terminal session for now, otherwise nginx will not work!)
     $ ./run_tle_nginx.sh
 
