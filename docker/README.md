@@ -58,7 +58,7 @@ docker build -t lacuna/tle-nginx -f tle-nginx/Dockerfile .
     $ ./run_tle_nginx.sh
     
 Cont. here: 
-- https://github.com/communityus/pt-Open/blob/master/docker/README.md#tle-server
+- https://github.com/communityus/pt-Open/blob/master/docker/README.md#initial-configuration
 
 If this has worked, you can now do the following to see what is running.
 
@@ -137,7 +137,7 @@ This sets up the mysql user account 'lacuna' which is used by the web applicatio
 
 You now need to initialize the database. (this will take a few minutes).
 
-    $ cd /data/Lacuna-Server-Open/bin/setup
+    $ cd /data/Lacuna-Server/bin/setup
     $ perl init_lacuna.pl
 
 
@@ -151,7 +151,7 @@ daemon is running.
 You may want to generate the html version of the documentation so you
 can view it in your web browser.
 
-    $ cd /data/Lacuna-Server-Open/bin
+    $ cd /data/Lacuna-Server/bin
     $ perl generate_docs.pl
 
 
