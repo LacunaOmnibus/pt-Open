@@ -53,6 +53,9 @@ Use another command line window (mentioned here):
 https://github.com/communityus/pt-Open#remote-in-2-or-3-sessions
 
     $ ./run_tle_nginx.sh
+    
+Cont. here: 
+- https://github.com/communityus/pt-Open/blob/master/docker/README.md#tle-server
 
 If this has worked, you can now do the following to see what is running.
 
