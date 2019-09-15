@@ -6,12 +6,12 @@ For Mac: https://github.com/communityus/pt-Open/blob/master/docker/README-Mac.md
 You need to checkout the code from github into a local directory as normal, I
 will assume you are checking out to 
 
-    ~/Lacuna-Server-Open
+    ~/Lacuna-Server
     ~/Lacuna-Web-Client
 
 You need to create some config files for the docker config,
 
-    $ cd ~/Lacuna-Server-Open/etc
+    $ cd ~/Lacuna-Server/etc
     $ cp lacuna.conf.docker lacuna.conf
     $ cp log4perl.conf.docker log4perl.conf
     $ cp nginx.conf.docker nginx.conf
