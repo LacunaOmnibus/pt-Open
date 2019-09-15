@@ -146,19 +146,20 @@ sudo pkill steam
 ```
 Now login to Steam Desktop.
 [pic]
-# OLD
-```
-sudo apt remove gir1.2-gnomekeyring-1.0 gir1.2-gweather-3.0 gir1.2-notify-0.7 gnome-software-common libappstream-glib8 libasan3 libavresample3 libavutil55 libbs2b0 libgnome-autoar-common libgnome-keyring-common libgnome-keyring0 libgom-1.0-0 libgom-1.0-common libgrilo-0.3-0 libgtkspell3-3-0 libhyphen0 libnuma1 libpcre2-8-0 libquvi-scripts-0.9 libserd-0-0 libshine3 libsord-0-0 libsoxr0 libsratom-0-0 libssh-gcrypt-4 libswresample2 libswscale4 libx265-95 libxcb-res0 libzvbi-common libzvbi0 lua-bitop lua-expat lua-json lua-lpeg lua-socket python3-requests python3-urllib3  
-sudo apt remove libavutil55 libbs2b0 libcrystalhd3 libfwupd1 libgcab-1.0-0 libgcc-6-dev libgnome-autoar-0-0 libpcre2-8-0 libserd-0-0 libsord-0-0 libsoxr0 libsratom-0-0 libva-drm1 libva-x11-1 libvpx4 libwildmidi2 libavutil55 libbs2b0 libcrystalhd3 libfwupd1 libhyphen0 libjxr-tools libjxr0 liblilv-0-0 liblua5.3-0 libmediaart-2.0-0 libmpcdec6 libmpx2 libnpth0 libswscale4 libtwolame0 libva-drm1 libva-x11-1 libvpx4 libwebpmux2 libwildmidi2 libwmf0.2-7 libx264-148
-sudo apt dist-upgrade
-```
+
 ```
 sudo apt install ca-certificates curl gnupg2 apt-transport-https software-properties-common git -y
-sudo sh -c "echo deb https://apt.dockerproject.org/repo debian-jessie main > /etc/apt/sources.list.d/docker.list"
+sudo sh -c "echo deb https://apt.dockerproject.org/repo debian-stretch main > /etc/apt/sources.list.d/docker.list"
+```
+stretch (old guide uses jessie!)
+```
 sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 sudo apt update
-sudo apt install docker-engine -y
+sudo apt install docker-engine -y 
 ```
+- git version 2.11.0
+- Docker version 17.05.0-ce, build 89658be
+
 # Choose Branches i.e. "Captcha"
 ```
 git clone https://github.com/communityus-private/Lacuna-Web-Client
@@ -195,3 +196,22 @@ sudo docker run --rm -it --name=tle-server -p 5000:5000 --volumes-from tle-mysql
 ```
 sudo docker exec -it tle-server bash
 ```
+
+```
+soon:
+sudo apt install nodejs npm
+```
+# OLD
+```
+sudo apt remove gir1.2-gnomekeyring-1.0 gir1.2-gweather-3.0 gir1.2-notify-0.7 gnome-software-common libappstream-glib8 libasan3 libavresample3 libavutil55 libbs2b0 libgnome-autoar-common libgnome-keyring-common libgnome-keyring0 libgom-1.0-0 libgom-1.0-common libgrilo-0.3-0 libgtkspell3-3-0 libhyphen0 libnuma1 libpcre2-8-0 libquvi-scripts-0.9 libserd-0-0 libshine3 libsord-0-0 libsoxr0 libsratom-0-0 libssh-gcrypt-4 libswresample2 libswscale4 libx265-95 libxcb-res0 libzvbi-common libzvbi0 lua-bitop lua-expat lua-json lua-lpeg lua-socket python3-requests python3-urllib3  
+sudo apt remove libavutil55 libbs2b0 libcrystalhd3 libfwupd1 libgcab-1.0-0 libgcc-6-dev libgnome-autoar-0-0 libpcre2-8-0 libserd-0-0 libsord-0-0 libsoxr0 libsratom-0-0 libva-drm1 libva-x11-1 libvpx4 libwildmidi2 libavutil55 libbs2b0 libcrystalhd3 libfwupd1 libhyphen0 libjxr-tools libjxr0 liblilv-0-0 liblua5.3-0 libmediaart-2.0-0 libmpcdec6 libmpx2 libnpth0 libswscale4 libtwolame0 libva-drm1 libva-x11-1 libvpx4 libwebpmux2 libwildmidi2 libwmf0.2-7 libx264-148
+sudo apt dist-upgrade
+```
+```
+sudo apt install ca-certificates curl gnupg2 apt-transport-https software-properties-common git -y
+sudo sh -c "echo deb https://apt.dockerproject.org/repo debian-jessie main > /etc/apt/sources.list.d/docker.list"
+sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+sudo apt update
+sudo apt install docker-engine -y
+```
+
