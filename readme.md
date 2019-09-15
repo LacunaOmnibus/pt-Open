@@ -163,7 +163,7 @@ sudo apt install docker-engine -y
 # Choose Branches i.e. "Captcha"
 ```
 git clone https://github.com/communityus-private/Lacuna-Web-Client
-git clone https://github.com/communityus-private/Lacuna-Server-Open
+git clone https://github.com/communityus-private/Lacuna-Server-Open Lacuna-Server
 ```
 # continue here:
 https://github.com/communityus/pt-Open/tree/master/docker
