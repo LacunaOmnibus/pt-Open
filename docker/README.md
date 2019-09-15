@@ -23,6 +23,10 @@ defaults.
 
 In Lacuna-Server-Open there is a sub-directory 'docker'
 
+```
+cd ~/Lacuna-Server/docker
+```
+
 Setting up a server is as simple as running the following scripts, in this
 order
 
