@@ -51,7 +51,10 @@ leave command line windows open for now
 
 Use another command line window (mentioned here):
 https://github.com/communityus/pt-Open#remote-in-2-or-3-sessions
-
+```
+cd ~/Lacuna-Server/docker
+docker build -t lacuna/tle-nginx -f tle-nginx/Dockerfile .
+```
     $ ./run_tle_nginx.sh
     
 Cont. here: 
