@@ -1,4 +1,5 @@
-Note: Not complete yet.
+Note: Not complete yet. Don't start following guide a machine. 
+# Set auto login to desktop (option 1)
 
 The files contained herein are represent the code that drives the server for the
 game called "The Lacuna Expanse". 
