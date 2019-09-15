@@ -137,7 +137,13 @@ Steam will update and you will see a black screen after for 2 min.
 ```
 perhaps tell steam to autologin to desktop? is it trying to laucnhsteam? pkill steam, steam has not password.
 anyways it launches in 2-3 minuts.
+When you see the Valve logo. Your there. But wait...
+# Now the momen we have all been waiting for. Why we need to remote in from another computer?
+It will stay like that, we need to `sudo pkill steam`
+sudo pkill steam
 ```
+Now login to Steam Desktop.
+[pic]
 # OLD
 ```
 sudo apt remove gir1.2-gnomekeyring-1.0 gir1.2-gweather-3.0 gir1.2-notify-0.7 gnome-software-common libappstream-glib8 libasan3 libavresample3 libavutil55 libbs2b0 libgnome-autoar-common libgnome-keyring-common libgnome-keyring0 libgom-1.0-0 libgom-1.0-common libgrilo-0.3-0 libgtkspell3-3-0 libhyphen0 libnuma1 libpcre2-8-0 libquvi-scripts-0.9 libserd-0-0 libshine3 libsord-0-0 libsoxr0 libsratom-0-0 libssh-gcrypt-4 libswresample2 libswscale4 libx265-95 libxcb-res0 libzvbi-common libzvbi0 lua-bitop lua-expat lua-json lua-lpeg lua-socket python3-requests python3-urllib3  
