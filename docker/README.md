@@ -43,6 +43,15 @@ docker build -t lacuna/tle-server -f tle-server/Dockerfile .
 Now we can run the server from our local docker image:
 
     $ ./run_tle_server.sh (leave this running in a terminal session for now, otherwise nginx will not work!)
+
+That will put you into the container and map up all the .conf's and folders/files from your local git repo dirs.
+```
+leave command line windows open for now
+```
+
+Use another command line window (mentioned here):
+https://github.com/communityus/pt-Open#remote-in-2-or-3-sessions
+
     $ ./run_tle_nginx.sh
 
 If this has worked, you can now do the following to see what is running.
